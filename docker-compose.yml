@@ -1,0 +1,38 @@
+version: '2'
+services:
+  postgres-adventureworks:
+    image: postgres:latest
+    hostname: postgres-adventureworks
+    container_name: postgres-adventureworks
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "postgres!"
+    ports:
+      - "15432:5432"
+    volumes:
+      - ./postgresql/data:/var/lib/postgresql/data
+      - ./postgresql/config/initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
+      - ./postgresql/dump/adventureworks:/etc/postgresql/adventureworks
+    command: postgres
+
+  pgadmin:
+    image: dpage/pgadmin4
+    hostname: pgadmin
+    container_name: pgadmin-adventureworks
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "adventureworks@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "adventureworks!"
+    ports:
+      - "16543:80"
+    depends_on:
+      - postgres-adventureworks
+
+  jupyterlab-psy:
+    image: laerciogil/jupyterlab-psy
+    container_name: jupyterlab
+    ports: 
+      - "8888:8888"
+    environment: 
+      - JUPYTER_ENABLE_LAB=yes
+    volumes: 
+      - ./jupyterlab/notebooks:/home/jovyan/work
